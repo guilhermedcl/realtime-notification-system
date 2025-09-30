@@ -20,10 +20,10 @@ Sistema de chat com notificações em tempo real desenvolvido com Node.js, Socke
 ## 🖼️ Screenshots
 
 ### Chat em funcionamento
-<img src="chat-screenshot.png" alt="Chat em funcionamento" width="600">
+<img src="docs/chat-screenshot.png" alt="Chat em funcionamento" width="600">
 
 ### Notificações em tempo real
-<img src="notification-screenshot.png" alt="Notificação" width="400">
+<img src="docs/notification-screenshot.png" alt="Notificação" width="400">
 
 ## ⚙️ Como usar
 

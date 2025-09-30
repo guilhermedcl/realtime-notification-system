@@ -1,9 +1,26 @@
 const socket = io();
 
+// Armazenar cores dos usuários
+const userColors = {};
+const availableColors = [
+    '#4CAF50', '#2196F3', '#FF9800', '#9C27B0',
+    '#F44336', '#795548', '#607D8B', '#E91E63'
+];
+let colorIndex = 0;
+
 // Conectar com o servidor
 socket.on('connect', () => {
     console.log('Conectado ao servidor');
 });
+
+// Função para obter cor do usuário
+function getUserColor(userId) {
+    if (!userColors[userId]) {
+        userColors[userId] = availableColors[colorIndex % availableColors.length];
+        colorIndex++;
+    }
+    return userColors[userId];
+}
 
 // Função para enviar mensagem
 function sendMessage() {
@@ -68,20 +85,33 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Exibir mensagem na tela
+// Exibir mensagem na tela estilo WhatsApp
 function displayMessage(message, timestamp, userId, isHistory = false) {
     const messagesDiv = document.getElementById('messages');
-    const messageElement = document.createElement('div');
-    messageElement.className = 'message';
+    const messageContainer = document.createElement('div');
 
-    if (isHistory) {
-        messageElement.classList.add('history');
-    }
-
-    const time = new Date(timestamp).toLocaleTimeString();
+    // Verificar se é mensagem própria
+    const isOwnMessage = userId === socket.id;
+    const userColor = getUserColor(userId);
     const shortUserId = userId ? userId.substring(0, 8) : 'unknown';
-    messageElement.innerHTML = `<strong>${time} [${shortUserId}]</strong>: ${message}`;
 
-    messagesDiv.appendChild(messageElement);
+    messageContainer.className = `message-container ${isOwnMessage ? 'own' : 'other'}`;
+
+    const time = new Date(timestamp).toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    messageContainer.innerHTML = `
+        <div class="message-bubble ${isHistory ? 'history' : ''}" style="background-color: ${isOwnMessage ? '#DCF8C6' : userColor}">
+            <div class="message-header">
+                <span class="user-name">${shortUserId}</span>
+                <span class="message-time">${time}</span>
+            </div>
+            <div class="message-content">${message}</div>
+        </div>
+    `;
+
+    messagesDiv.appendChild(messageContainer);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
